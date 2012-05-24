@@ -15,7 +15,8 @@ BEGIN {
 
 diag(
     sprintf(
-        'Testing Games::GridWalker %f, Perl %f, %s', $Games::GridWalker::VERSION, $], $^X
+        'Testing Games::GridWalker %f, Perl %f, %s',
+        $Games::GridWalker::VERSION, $], $^X
     )
 );
 
