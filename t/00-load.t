@@ -6,6 +6,8 @@ use Test::More;
 BEGIN {
     my @modules = qw(
         Games::GridWalker
+        Games::GridWalker::Grid
+        Games::GridWalker::Walker
     );
 
     for my $module (@modules) {
