@@ -7,8 +7,8 @@ use SDL::Events qw( SDLK_LEFT SDLK_RIGHT SDLK_UP SDLK_DOWN );
 use SDLx::App;
 use Games::GridWalker qw(:all);
 
-my ( $grid_width, $grid_height ) = ( 32, 24 );
-my $cell_size = 20;
+my ( $grid_width, $grid_height ) = ( 16, 12 );
+my $cell_size = 40;
 
 my $grid = make_grid(
     width  => $grid_width,
@@ -18,7 +18,7 @@ my $grid = make_grid(
 my $walker = make_walker(
     x => int $grid_width / 2,
     y => int $grid_height / 2,
-    v => 1,
+    v => 0.5,
 );
 
 my $app = SDLx::App->new(
