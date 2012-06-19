@@ -59,11 +59,6 @@ $app->add_event_handler(
             $walker->stop() if $event->key_sym == SDLK_RIGHT;
             $walker->stop() if $event->key_sym == SDLK_UP;
             $walker->stop() if $event->key_sym == SDLK_DOWN;
-
-            #$walker->set_direction(WEST)  if $event->key_sym == SDLK_LEFT;
-            #$walker->set_direction(EAST)  if $event->key_sym == SDLK_RIGHT;
-            #$walker->set_direction(NORTH) if $event->key_sym == SDLK_UP;
-            #$walker->set_direction(SOUTH) if $event->key_sym == SDLK_DOWN;
         }
     }
 );
