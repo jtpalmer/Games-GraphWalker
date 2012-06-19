@@ -30,8 +30,61 @@ sub move {
 
     return unless $self->moving;
 
+    $self->_last_x( $self->x );
+    $self->_last_y( $self->y );
+
     $self->x( $self->x + $self->vx * $dt );
     $self->y( $self->y + $self->vy * $dt );
+
+    if ( $self->vx && $self->vx != $self->_want_vx ) {
+        if ( $self->vx > 0 && $self->x > $self->_next_x ) {
+            $self->x( $self->_next_x );
+            $self->vx( $self->_want_vx );
+            $self->vy( $self->_want_vy );
+        }
+
+        if ( $self->vx < 0 && $self->x < $self->_next_x ) {
+            $self->x( $self->_next_x );
+            $self->vx( $self->_want_vx );
+            $self->vy( $self->_want_vy );
+        }
+    }
+    else {
+        if ( $self->vx > 0 && $self->x > $self->_next_x ) {
+            $self->_next_x( $self->_next_x + 1 );
+        }
+
+        if ( $self->vx < 0 && $self->x < $self->_next_x ) {
+            $self->_next_x( $self->_next_x - 1 );
+        }
+    }
+
+    if ( $self->vy && $self->vy != $self->_want_vy ) {
+        if ( $self->vy > 0 && $self->y > $self->_next_y ) {
+            $self->y( $self->_next_y );
+            $self->vx( $self->_want_vx );
+            $self->vy( $self->_want_vy );
+        }
+
+        if ( $self->vy < 0 && $self->y < $self->_next_y ) {
+            $self->y( $self->_next_y );
+            $self->vx( $self->_want_vx );
+            $self->vy( $self->_want_vy );
+        }
+    }
+    else {
+        if ( $self->vy > 0 && $self->y > $self->_next_y ) {
+            $self->_next_y( $self->_next_y + 1 );
+        }
+
+        if ( $self->vy < 0 && $self->y < $self->_next_y ) {
+            $self->_next_y( $self->_next_y - 1 );
+        }
+    }
+
+    if ( !$self->vx && !$self->vy ) {
+        $self->moving(0);
+    }
 
     return;
 }
@@ -59,6 +112,12 @@ sub set_direction {
     if ( !$self->moving ) {
         $self->vx( $self->_want_vx );
         $self->vy( $self->_want_vy );
+
+        $self->_next_x( $self->x + 1 ) if $self->vx > 0;
+        $self->_next_x( $self->x - 1 ) if $self->vx < 0;
+        $self->_next_y( $self->y + 1 ) if $self->vy > 0;
+        $self->_next_y( $self->y - 1 ) if $self->vy < 0;
+
         $self->moving(1);
     }
 }
