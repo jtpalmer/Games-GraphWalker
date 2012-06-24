@@ -1,4 +1,7 @@
 package Games::GridWalker::Grid;
+
+# ABSTRACT: Grid model
+
 use strict;
 use warnings;
 use Mouse;

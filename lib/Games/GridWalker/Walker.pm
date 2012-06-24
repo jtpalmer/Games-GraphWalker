@@ -1,11 +1,12 @@
 package Games::GridWalker::Walker;
+
+# ABSTRACT: Walker model
+
 use strict;
 use warnings;
 use Mouse;
 use namespace::clean -except => 'meta';
 use Games::GridWalker qw(:compass);
-
-# ABSTRACT: Undocumented class.
 
 has [qw( x y v vx vy )] => (
     is      => 'rw',

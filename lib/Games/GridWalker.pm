@@ -1,10 +1,11 @@
 package Games::GridWalker;
+
+# ABSTRACT: Framework for animating objects that move on a grid
+
 use strict;
 use warnings;
 
 use parent qw(Exporter);
-
-# ABSTRACT: Framework for animating objects that move around a grid
 
 use constant {
     NORTH => 1,
