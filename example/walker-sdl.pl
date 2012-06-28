@@ -8,7 +8,8 @@ use SDLx::App;
 use Games::GridWalker qw(:all);
 
 my ( $width, $height ) = ( 640, 480 );
-my $cell_size = 40;
+my $cell_size   = 40;
+my $walker_size = 20;
 my ( $grid_width, $grid_height ) = ( $width / 40, $height / 40 );
 
 my $grid = make_grid(
@@ -44,12 +45,9 @@ $app->add_show_handler(
             $app->draw_line( [ 0, $y ], [ $width, $y ], 0x444444ff );
         }
 
-        $app->draw_rect(
-            [   $walker->x * $cell_size, $walker->y * $cell_size,
-                $cell_size,              $cell_size
-            ],
-            0xFFFF00FF
-        );
+        my $x = ( $walker->x + 0.5 ) * $cell_size - $walker_size / 2;
+        my $y = ( $walker->y + 0.5 ) * $cell_size - $walker_size / 2;
+        $app->draw_rect( [ $x, $y, $walker_size, $walker_size ], 0xFFFF00FF );
 
         $app->update();
     }
