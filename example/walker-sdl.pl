@@ -34,6 +34,16 @@ $app->add_show_handler(
     sub {
         $app->draw_rect( undef, undef );
 
+        for my $n ( 0 .. $grid_width - 1 ) {
+            my $x = ( $n + 0.5 ) * $cell_size;
+            $app->draw_line( [ $x, 0 ], [ $x, $height ], 0x444444ff );
+        }
+
+        for my $n ( 0 .. $grid_height - 1 ) {
+            my $y = ( $n + 0.5 ) * $cell_size;
+            $app->draw_line( [ 0, $y ], [ $width, $y ], 0x444444ff );
+        }
+
         $app->draw_rect(
             [   $walker->x * $cell_size, $walker->y * $cell_size,
                 $cell_size,              $cell_size
