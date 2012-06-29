@@ -134,29 +134,27 @@ __PACKAGE__->meta->make_immutable;
 
 1;
 
+__END__
+
 =pod
 
 =head1 SYNOPSIS
 
-    package My::Walker;
-    use Mouse;
-    with 'Games::GridWalker::Walker';
+    use Games::GridWalker::Walker;
+
+    my $walker = Games::GridWalker::Walker->new();
 
 =head1 DESCRIPTION
 
-What does this module do?
+
 
 =head1 METHODS
 
-=head2 method
+=head2 move
 
-=head1 CAVEATS
+=head2 set_direction
 
-=head1 BUGS
-
-=head1 RESTRICTIONS
-
-=head1 NOTES
+=head2 stop
 
 =head1 SEE ALSO
 

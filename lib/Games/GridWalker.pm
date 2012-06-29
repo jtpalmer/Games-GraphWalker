@@ -55,6 +55,8 @@ sub move {
 
 1;
 
+__END__
+
 =pod
 
 =head1 SYNOPSIS
