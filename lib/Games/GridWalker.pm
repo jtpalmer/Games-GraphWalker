@@ -10,8 +10,8 @@ use parent qw(Exporter);
 use constant {
     NORTH => 1,
     SOUTH => 2,
-    WEST  => 5,
-    EAST  => 6,
+    WEST  => 4,
+    EAST  => 8,
 };
 
 our @EXPORT_OK = qw(
