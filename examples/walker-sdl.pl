@@ -18,9 +18,9 @@ my $grid = make_grid(
 );
 
 my $walker = make_walker(
-    x => int $grid_width / 2,
-    y => int $grid_height / 2,
-    v => 0.5,
+    x     => int( $grid_width / 2 ),
+    y     => int( $grid_height / 2 ),
+    max_v => 0.5,
 );
 
 my $app = SDLx::App->new(

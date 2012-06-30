@@ -6,6 +6,7 @@ BEGIN {
     my @modules = qw(
         Games::GridWalker
         Games::GridWalker::Grid
+        Games::GridWalker::Types
         Games::GridWalker::Walker
     );
 
