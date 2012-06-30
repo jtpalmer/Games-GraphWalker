@@ -8,15 +8,21 @@ use Mouse;
 use namespace::clean -except => 'meta';
 use Games::GridWalker qw(:compass);
 
-has [qw( x y v vx vy )] => (
+has [qw( x y v )] => (
     is      => 'rw',
     isa     => 'Num',
     default => 0,
 );
 
-has [qw( _want_vx _want_vy _last_x _last_y _next_x _next_y )] => (
+has [qw( vx vy _want_vx _want_vy )] => (
     is      => 'rw',
     isa     => 'Num',
+    default => 0,
+);
+
+has [qw( _last_x _last_y _next_x _next_y )] => (
+    is      => 'rw',
+    isa     => 'Int',
     default => 0,
 );
 
