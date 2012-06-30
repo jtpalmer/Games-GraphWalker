@@ -93,21 +93,27 @@ sub move {
 sub set_direction {
     my ( $self, $direction ) = @_;
 
-    if ( $direction == NORTH ) {
-        $self->_want_vx(0);
-        $self->_want_vy( -$self->v );
-    }
-    if ( $direction == SOUTH ) {
-        $self->_want_vx(0);
-        $self->_want_vy( $self->v );
-    }
-    if ( $direction == WEST ) {
-        $self->_want_vx( -$self->v );
-        $self->_want_vy(0);
-    }
-    if ( $direction == EAST ) {
-        $self->_want_vx( $self->v );
-        $self->_want_vy(0);
+    for ($direction) {
+        if ( $_ == NORTH ) {
+            $self->_want_vx(0);
+            $self->_want_vy( -$self->v );
+            last;
+        }
+        if ( $_ == SOUTH ) {
+            $self->_want_vx(0);
+            $self->_want_vy( $self->v );
+            last;
+        }
+        if ( $_ == WEST ) {
+            $self->_want_vx( -$self->v );
+            $self->_want_vy(0);
+            last;
+        }
+        if ( $_ == EAST ) {
+            $self->_want_vx( $self->v );
+            $self->_want_vy(0);
+            last;
+        }
     }
 
     if ( !$self->moving ) {
