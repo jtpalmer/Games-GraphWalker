@@ -4,10 +4,10 @@ use Test::More;
 
 BEGIN {
     my @modules = qw(
-        Games::GridWalker
-        Games::GridWalker::Grid
-        Games::GridWalker::Types
-        Games::GridWalker::Walker
+        Games::MapWalker
+        Games::MapWalker::Grid
+        Games::MapWalker::Types
+        Games::MapWalker::Walker
     );
 
     for my $module (@modules) {
@@ -17,8 +17,8 @@ BEGIN {
 
 diag(
     sprintf(
-        'Testing Games::GridWalker %f, Perl %f, %s',
-        $Games::GridWalker::VERSION, $], $^X
+        'Testing Games::MapWalker %f, Perl %f, %s',
+        $Games::MapWalker::VERSION, $], $^X
     )
 );
 

@@ -1,4 +1,4 @@
-package Games::GridWalker::Role::Event;
+package Games::MapWalker::Role::Event;
 
 # ABSTRACT: Undocumented class
 

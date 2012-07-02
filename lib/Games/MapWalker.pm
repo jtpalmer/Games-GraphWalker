@@ -1,4 +1,4 @@
-package Games::GridWalker;
+package Games::MapWalker;
 
 # ABSTRACT: Framework for animating objects that move on a grid
 
@@ -30,15 +30,15 @@ our %EXPORT_TAGS = (
 );
 
 sub make_grid {
-    require Games::GridWalker::Grid;
-    my $grid = Games::GridWalker::Grid->new(@_);
+    require Games::MapWalker::Grid;
+    my $grid = Games::MapWalker::Grid->new(@_);
 
     return $grid;
 }
 
 sub make_walker {
-    require Games::GridWalker::Walker;
-    my $walker = Games::GridWalker::Walker->new(@_);
+    require Games::MapWalker::Walker;
+    my $walker = Games::MapWalker::Walker->new(@_);
 
     return $walker;
 }
@@ -61,7 +61,7 @@ __END__
 
 =head1 SYNOPSIS
 
-    my $gw = Games::GridWalker->new(
+    my $gw = Games::MapWalker->new(
     );
 
 =head1 DESCRIPTION

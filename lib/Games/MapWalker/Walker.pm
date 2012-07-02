@@ -1,4 +1,4 @@
-package Games::GridWalker::Walker;
+package Games::MapWalker::Walker;
 
 # ABSTRACT: Walker model
 
@@ -6,8 +6,8 @@ use strict;
 use warnings;
 use Mouse;
 use namespace::clean -except => 'meta';
-use Games::GridWalker qw(:compass);
-use Games::GridWalker::Types;
+use Games::MapWalker qw(:compass);
+use Games::MapWalker::Types;
 
 has max_v => (
     is      => 'rw',
@@ -175,9 +175,9 @@ __END__
 
 =head1 SYNOPSIS
 
-    use Games::GridWalker::Walker;
+    use Games::MapWalker::Walker;
 
-    my $walker = Games::GridWalker::Walker->new();
+    my $walker = Games::MapWalker::Walker->new();
 
 =head1 DESCRIPTION
 
@@ -195,7 +195,7 @@ __END__
 
 =over 4
 
-=item * L<Games::GridWalker>
+=item * L<Games::MapWalker>
 
 =back
 

@@ -1,4 +1,4 @@
-package Games::GridWalker::Role::Observable;
+package Games::MapWalker::Role::Observable;
 
 # ABSTRACT: Undocumented role
 

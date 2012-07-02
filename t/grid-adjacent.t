@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 use Test::More;
-use Games::GridWalker::Grid;
+use Games::MapWalker::Grid;
 
-my $grid = Games::GridWalker::Grid->new();
+my $grid = Games::MapWalker::Grid->new();
 
 ok( $grid->_adjacent( [2, 2], [2, 1] ) );
 ok( $grid->_adjacent( [2, 2], [1, 2] ) );
