@@ -1,4 +1,4 @@
-package Games::MapWalker::Grid;
+package Games::GraphWalker::Grid;
 
 # ABSTRACT: Grid model
 
@@ -6,8 +6,8 @@ use strict;
 use warnings;
 use Mouse;
 use Carp qw(croak);
-use Games::MapWalker qw(:compass);
-use Games::MapWalker::Walker;
+use Games::GraphWalker qw(:compass);
+use Games::GraphWalker::Walker;
 
 has _grid => (
     is      => 'ro',
@@ -17,7 +17,7 @@ has _grid => (
 
 has _walkers => (
     is      => 'ro',
-    isa     => 'ArrayRef[Games::MapWalker::Walker]',
+    isa     => 'ArrayRef[Games::GraphWalker::Walker]',
     default => sub { [] },
 );
 
@@ -90,7 +90,7 @@ __END__
 
 =head1 SYNOPSIS
 
-    my $grid = Games::MapWalker->new(
+    my $grid = Games::GraphWalker->new(
         width     => 30,
         height    => 20,
         x_spacing => 10,

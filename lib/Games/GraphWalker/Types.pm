@@ -1,4 +1,4 @@
-package Games::MapWalker::Types;
+package Games::GraphWalker::Types;
 
 # ABSTRACT: Types
 
@@ -22,7 +22,7 @@ __END__
 
     package My::Example;
     use Mouse;
-    use Games::MapWalker::Types;
+    use Games::GraphWalker::Types;
 
     has number => (
         is  => 'rw',
@@ -33,14 +33,14 @@ __END__
 
 =head1 DESCRIPTION
 
-Games::Gridwalker::Types Provides types used by Games::MapWalker
+Games::Gridwalker::Types Provides types used by Games::GraphWalker
 classes.
 
 =head1 SEE ALSO
 
 =over 4
 
-=item * L<Games::MapWalker>
+=item * L<Games::GraphWalker>
 
 =back
 

@@ -1,4 +1,4 @@
-package Games::MapWalker::Walker;
+package Games::GraphWalker::Walker;
 use strict;
 use warnings;
 use Mouse::Role;
@@ -92,7 +92,7 @@ __PACKAGE__->meta->make_immutable;
 
     package My::Walker;
     use Mouse;
-    with 'Games::MapWalker::Walker';
+    with 'Games::GraphWalker::Walker';
 
 =head1 DESCRIPTION
 
@@ -114,7 +114,7 @@ What does this module do?
 
 =over 4
 
-=item * L<Games::MapWalker>
+=item * L<Games::GraphWalker>
 
 =back
 
