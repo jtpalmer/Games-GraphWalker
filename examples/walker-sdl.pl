@@ -26,6 +26,7 @@ my $walker = make_walker(
 my $app = SDLx::App->new(
     width  => $grid_width * $cell_size,
     height => $grid_height * $cell_size,
+    delay  => 20,
     eoq    => 1,
 );
 
