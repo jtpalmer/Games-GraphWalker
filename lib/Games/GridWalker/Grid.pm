@@ -5,6 +5,7 @@ package Games::GridWalker::Grid;
 use strict;
 use warnings;
 use Mouse;
+use Carp qw(croak);
 use Games::GridWalker qw(:compass);
 use Games::GridWalker::Walker;
 
@@ -23,7 +24,7 @@ has _walkers => (
 has [qw( width height )] => (
     is       => 'ro',
     isa      => 'Int',
-    required => 1,
+    default => 10,
 );
 
 has [qw( x_spacing y_spacing )] => (
@@ -38,16 +39,45 @@ sub is_connected {
 }
 
 sub is_occupied {
+    my ( $self, $pos ) = @_;
+
+    for my $walker ( @{ $self->_walkers } ) {
+    }
+
+    return 0;
 }
 
 sub move_walkers {
     my ( $self, $dt ) = @_;
 
-    for my $walker ( @{ $self->_walkers } ) {
-        $walker->move($dt);
-    }
+    $_->move($dt) for @{ $self->_walkers };
 
     return;
+}
+
+sub _get_direction {
+    my ( $self, $pos_a, $pos_b ) = @_;
+
+    croak sprintf( '(%d, %d) and (%d, %d) are not adjacent',
+        $pos_a->[0], $pos_a->[1], $pos_b->[0], $pos_b->[1] )
+        unless $self->_adjacent( $pos_a, $pos_b );
+
+    for ( $pos_b->[0] - $pos_a->[0] ) {
+        return EAST if $_ == 1;
+        return WEST if $_ == -1;
+    }
+
+    for ( $pos_b->[1] - $pos_a->[1] ) {
+        return SOUTH if $_ == 1;
+        return NORTH if $_ == -1;
+    }
+}
+
+sub _adjacent {
+    my ( $self, $pos_a, $pos_b ) = @_;
+
+    return ( abs( $pos_b->[0] - $pos_a->[0] ) == 1 )
+        ^ ( abs( $pos_b->[1] - $pos_a->[1] ) == 1 );
 }
 
 __PACKAGE__->meta->make_immutable();
