@@ -9,7 +9,13 @@ use Mouse::Util::TypeConstraints;
 subtype 'NonNegativeNum' => (
     as 'Num',
     where { $_ >= 0 },
-    message {"The number you proveded, $_, was nont a non-negative number"}
+    message {"The number you provided, $_, is not a non-negative number"}
+);
+
+subtype 'Coordinate' => (
+    as 'ArrayRef[Num]',
+    where { scalar @$_ == 2 },
+    message {"The coordinate you provided, $_, is not valid"}
 );
 
 1;

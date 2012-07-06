@@ -6,8 +6,22 @@ use strict;
 use warnings;
 use Mouse;
 use namespace::clean -except => 'meta';
-use Games::GraphWalker qw(:compass);
 use Games::GraphWalker::Types;
+
+# Events:
+# moved
+# changed_direction
+# entering_node
+# entered_node
+# exiting_node
+# exited_node
+# started_moving
+# stopped_moving
+
+has graph => (
+    is => 'ro',
+    required => 1,
+);
 
 has max_v => (
     is      => 'rw',
@@ -15,30 +29,31 @@ has max_v => (
     default => 0.1,
 );
 
-has _x => (
-    is       => 'rw',
-    isa      => 'Num',
-    init_arg => 'x',
-    default  => 0,
+has direction => (
+    is        => 'rw',
+    clearer   => '_clear_direction',
+    predicate => 'has_direction',
 );
 
-has _y => (
-    is       => 'rw',
-    isa      => 'Num',
-    init_arg => 'y',
-    default  => 0,
-);
+has _next_direction => ( is => 'rw' );
 
-has [qw( _vx _vy _want_vx _want_vy )] => (
+has [qw( _position _distance )] => (
     is      => 'rw',
     isa     => 'Num',
     default => 0,
 );
 
-has [qw( _last_x _last_y _next_x _next_y )] => (
+has current_node => (
+    is       => 'rw',
+    isa      => 'Maybe[Games::GraphWalker::Role::Node]',
+    writer   => '_current_node',
+    required => 1,
+);
+
+has [qw( _last_node _next_node )] => (
     is      => 'rw',
-    isa     => 'Int',
-    default => 0,
+    isa     => 'Maybe[Games::GraphWalker::Role::Node]',
+    default => undef,
 );
 
 has moving => (
@@ -47,122 +62,120 @@ has moving => (
     default => 0,
 );
 
-sub x { $_[0]->_x; }
+around direction => sub {
+    my ( $orig, $self, $dir ) = @_;
 
-sub y { $_[0]->_y; }
+    return $self->$orig unless defined $dir;
 
-sub vx { $_[0]->_vx; }
+    $self->_next_direction($dir);
 
-sub vy { $_[0]->_vy; }
+    return $self->$orig if $self->moving;
+
+    return $self->$orig($dir);
+};
 
 sub move {
     my ( $self, $dt ) = @_;
 
-    return unless $self->moving;
+    # Do we have a direction set?
+    return unless $self->has_direction;
 
-    $self->_last_x( $self->_x );
-    $self->_last_y( $self->_y );
+    # Do we have our next node set?
+    if ( !$self->_next_node ) {
+        return $self->_move_towards( $self->direction, $dt );
+    }
 
-    $self->_x( $self->_x + $self->_vx * $dt );
-    $self->_y( $self->_y + $self->_vy * $dt );
+    my $pos = $self->_position + $dt * $self->max_v;
+    warn $self->_distance . " $pos $dt";
 
-    if ( $self->_vx && $self->_vx != $self->_want_vx ) {
-        if ( $self->_vx > 0 && $self->_x > $self->_next_x ) {
-            $self->_x( $self->_next_x );
-            $self->_vx( $self->_want_vx );
-            $self->_vy( $self->_want_vy );
-        }
+    # Have we reached the next node?
+    if ( $pos >= $self->_distance ) {
+        my $remainder = $pos - $self->_distance;
 
-        if ( $self->_vx < 0 && $self->_x < $self->_next_x ) {
-            $self->_x( $self->_next_x );
-            $self->_vx( $self->_want_vx );
-            $self->_vy( $self->_want_vy );
+        $self->_current_node( $self->_next_node );
+
+        # Events:
+        # entered_node
+
+        if ( $remainder > 0 ) {
+
+            # Do we want to stop moving?
+            if ( !defined $self->_next_direction ) {
+                $self->moving(0);
+                $self->_clear_direction;
+                $self->_next_node(undef);
+
+                # Events:
+                # stopped_moving
+            }
+            else {
+                $self->_move_towards( $self->_next_direction );
+            }
         }
     }
     else {
-        if ( $self->_vx > 0 && $self->_x > $self->_next_x ) {
-            $self->_next_x( $self->_next_x + 1 );
-        }
-
-        if ( $self->_vx < 0 && $self->_x < $self->_next_x ) {
-            $self->_next_x( $self->_next_x - 1 );
-        }
+        $self->_position($pos);
     }
 
-    if ( $self->_vy && $self->_vy != $self->_want_vy ) {
-        if ( $self->_vy > 0 && $self->_y > $self->_next_y ) {
-            $self->_y( $self->_next_y );
-            $self->_vx( $self->_want_vx );
-            $self->_vy( $self->_want_vy );
-        }
-
-        if ( $self->_vy < 0 && $self->_y < $self->_next_y ) {
-            $self->_y( $self->_next_y );
-            $self->_vx( $self->_want_vx );
-            $self->_vy( $self->_want_vy );
-        }
-    }
-    else {
-        if ( $self->_vy > 0 && $self->_y > $self->_next_y ) {
-            $self->_next_y( $self->_next_y + 1 );
-        }
-
-        if ( $self->_vy < 0 && $self->_y < $self->_next_y ) {
-            $self->_next_y( $self->_next_y - 1 );
-        }
-    }
-
-    if ( !$self->_vx && !$self->_vy ) {
-        $self->moving(0);
-    }
-
-    return;
+    # Events:
+    # moved?
 }
 
-sub set_direction {
-    my ( $self, $direction ) = @_;
+sub _move_towards {
+    my ( $self, $dir, $dt ) = @_;
 
-    for ($direction) {
-        if ( $_ == NORTH ) {
-            $self->_want_vx(0);
-            $self->_want_vy( -$self->max_v );
-            last;
+    # Do we have somewhere to move to?
+    #my $nodes = $self->current_node->successors;
+    my $nodes = $self->graph->successors($self->current_node);
+
+    if ( defined $nodes->{ $dir } ) {
+
+        my $node = $nodes->{ $dir };
+
+        $self->_last_node( $self->current_node );
+        $self->_next_node($node);
+        $self->_current_node(undef);
+
+        $self->_distance( $self->graph->get_edge_distance( $self->_last_node, $self->_next_node ) );
+        $self->_position( 0 );
+
+        # Events:
+        # exiting_node
+        # entering_node
+
+        if ( !$self->moving ) {
+            $self->moving(1);
+
+            # Events:
+            # started_moving
         }
-        if ( $_ == SOUTH ) {
-            $self->_want_vx(0);
-            $self->_want_vy( $self->max_v );
-            last;
+        else {
+
+            # Events:
+            # changed_direction?
         }
-        if ( $_ == WEST ) {
-            $self->_want_vx( -$self->max_v );
-            $self->_want_vy(0);
-            last;
-        }
-        if ( $_ == EAST ) {
-            $self->_want_vx( $self->max_v );
-            $self->_want_vy(0);
-            last;
-        }
+
+        return $self->move($dt);
+    }
+    elsif ( $self->moving ) {
+        $self->moving(0);
+
+        # Event:
+        # stopped_moving
+        return;
     }
 
-    if ( !$self->moving ) {
-        $self->_vx( $self->_want_vx );
-        $self->_vy( $self->_want_vy );
+    # Events:
+    # exiting_node
+    # entering_node
 
-        $self->_next_x( $self->_x + 1 ) if $self->_vx > 0;
-        $self->_next_x( $self->_x - 1 ) if $self->_vx < 0;
-        $self->_next_y( $self->_y + 1 ) if $self->_vy > 0;
-        $self->_next_y( $self->_y - 1 ) if $self->_vy < 0;
-
-        $self->moving(1);
-    }
 }
 
 sub stop {
     my $self = shift;
 
-    $self->_want_vx(0);
-    $self->_want_vy(0);
+    $self->_next_direction(undef) if $self->moving;
+
 }
 
 __PACKAGE__->meta->make_immutable;

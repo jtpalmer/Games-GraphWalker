@@ -1,57 +1,39 @@
 package Games::GraphWalker;
 
-# ABSTRACT: Framework for animating objects that move on a grid
+# ABSTRACT: Framework for animating objects that move on a graph
 
 use strict;
 use warnings;
+use Moose;
+use namespace::clean -except => 'meta';
 
-use parent qw(Exporter);
-
-use constant {
-    NORTH => 1,
-    SOUTH => 2,
-    WEST  => 4,
-    EAST  => 8,
-};
-
-our @EXPORT_OK = qw(
-    NORTH
-    SOUTH
-    WEST
-    EAST
-    make_grid
-    make_walker
+has graph => (
+    is       => 'ro',
+    required => 1,
 );
 
-our %EXPORT_TAGS = (
-    all     => [qw( NORTH SOUTH WEST EAST make_grid make_walker )],
-    compass => [qw( NORTH SOUTH WEST EAST )],
-    factory => [qw( make_grid make_walker )],
+has walkers => (
+    is       => 'ro',
+    required => 1,
 );
 
-sub make_grid {
-    require Games::GraphWalker::Grid;
-    my $grid = Games::GraphWalker::Grid->new(@_);
+has projection => (
+    is       => 'ro',
+    required => 1,
+    handles  => [qw( coords_for_node coords_for_walker )],
+);
 
-    return $grid;
-}
-
-sub make_walker {
-    require Games::GraphWalker::Walker;
-    my $walker = Games::GraphWalker::Walker->new(@_);
-
-    return $walker;
-}
-
-sub move {
+sub move_walkers {
     my ( $self, $dt ) = @_;
 
-    for my $walker (@{$self->walkers}) {
+    for my $walker ( @{ $self->walkers } ) {
         $walker->move($dt);
     }
 
     return;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;
 
@@ -61,12 +43,7 @@ __END__
 
 =head1 SYNOPSIS
 
-    my $gw = Games::GraphWalker->new(
-    );
-
 =head1 DESCRIPTION
-
-
 
 =head1 METHODS
 

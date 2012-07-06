@@ -5,15 +5,18 @@ package Games::GraphWalker::Grid;
 use strict;
 use warnings;
 use Mouse;
+use namespace::clean -except => 'meta';
 use Carp qw(croak);
-use Games::GraphWalker qw(:compass);
-use Games::GraphWalker::Walker;
+use Games::GraphWalker::GridNode;
 
-has _grid => (
-    is      => 'ro',
-    isa     => 'ArrayRef[ArrayRef]',
-    default => sub { [ [] ] },
-);
+with qw(Games::GraphWalker::Role::Graph);
+
+use constant {
+    NORTH => 1,
+    SOUTH => 2,
+    WEST  => 4,
+    EAST  => 8,
+};
 
 has _walkers => (
     is      => 'ro',
@@ -21,10 +24,10 @@ has _walkers => (
     default => sub { [] },
 );
 
-has [qw( width height )] => (
-    is       => 'ro',
-    isa      => 'Int',
-    default => 10,
+has _node_at => (
+    is      => 'ro',
+    isa     => 'ArrayRef[ArrayRef[Games::GraphWalker::GridNode]]',
+    required => 1,
 );
 
 has [qw( x_spacing y_spacing )] => (
@@ -33,51 +36,84 @@ has [qw( x_spacing y_spacing )] => (
     default => 1,
 );
 
-sub is_connected {
-    my ( $self, $pos_a, $pos_b ) = @_;
+around BUILDARGS => sub {
+    my ( $orig, $class, %args ) = @_;
 
-}
+    croak "width and height are required"
+        unless defined $args{width} and defined $args{height};
 
-sub is_occupied {
-    my ( $self, $pos ) = @_;
+    my ( $width, $height ) = @args{qw( width height )};
 
-    for my $walker ( @{ $self->_walkers } ) {
+    warn "$width, $height";
+
+    my ( $x_spacing, $y_spacing ) = @args{qw( x_spacing y_spacing )};
+
+    $x_spacing = 1 unless defined $x_spacing;
+    $y_spacing = 1 unless defined $y_spacing;
+
+    my ( @node_at, @nodes, @edges );
+
+    for my $x ( 0 .. $width - 1 ) {
+        for my $y ( 0 .. $height - 1 ) {
+            my $node = Games::GraphWalker::GridNode->new(
+                x => $x,
+                y => $y,
+
+                # TODO:
+                #graph => $self,
+            );
+            push @nodes, $node;
+            $node_at[$x][$y] = $node;
+        }
     }
 
-    return 0;
-}
-
-sub move_walkers {
-    my ( $self, $dt ) = @_;
-
-    $_->move($dt) for @{ $self->_walkers };
-
-    return;
-}
-
-sub _get_direction {
-    my ( $self, $pos_a, $pos_b ) = @_;
-
-    croak sprintf( '(%d, %d) and (%d, %d) are not adjacent',
-        $pos_a->[0], $pos_a->[1], $pos_b->[0], $pos_b->[1] )
-        unless $self->_adjacent( $pos_a, $pos_b );
-
-    for ( $pos_b->[0] - $pos_a->[0] ) {
-        return EAST if $_ == 1;
-        return WEST if $_ == -1;
+    for my $x ( 0 .. $width - 1 ) {
+        for my $y ( 0 .. $height - 1 ) {
+            if ( $x != $width - 1 ) {
+                push @edges => {
+                    src       => $node_at[$x][$y],
+                    dest      => $node_at[ $x + 1 ][$y],
+                    distance  => $x_spacing,
+                    direction => EAST,
+                };
+                push @edges => {
+                    src       => $node_at[ $x + 1 ][$y],
+                    dest      => $node_at[$x][$y],
+                    distance  => $x_spacing,
+                    direction => WEST,
+                };
+            }
+            if ( $y != $height - 1 ) {
+                push @edges => {
+                    src       => $node_at[$x][$y],
+                    dest      => $node_at[$x][ $y + 1 ],
+                    distance  => $y_spacing,
+                    direction => SOUTH,
+                };
+                push @edges => {
+                    src       => $node_at[$x][ $y + 1 ],
+                    dest      => $node_at[$x][$y],
+                    distance  => $y_spacing,
+                    direction => NORTH,
+                };
+            }
+        }
     }
 
-    for ( $pos_b->[1] - $pos_a->[1] ) {
-        return SOUTH if $_ == 1;
-        return NORTH if $_ == -1;
-    }
-}
+    return $class->$orig(
+        %args,
+        _node_at => \@node_at,
+        nodes    => \@nodes,
+        edges    => \@edges,
+    );
+};
 
-sub _adjacent {
-    my ( $self, $pos_a, $pos_b ) = @_;
+sub get_node {
+    my ( $self, $x, $y ) = @_;
 
-    return ( abs( $pos_b->[0] - $pos_a->[0] ) == 1 )
-        ^ ( abs( $pos_b->[1] - $pos_a->[1] ) == 1 );
+    warn "$x, $y";
+
+    return $self->_node_at->[$x][$y];
 }
 
 __PACKAGE__->meta->make_immutable();
@@ -103,15 +139,15 @@ Represents a grid.
 
 =head1 METHODS
 
-=head2 width
-
-=head2 height
-
-=head2 x_spacing
-
-=head2 y_spacing
-
 =head1 SEE ALSO
+
+=over 4
+
+=item * L<Games::GraphWalker>
+
+=item * L<Games::GraphWalker::Role::Graph>
+
+=back
 
 =cut
 
