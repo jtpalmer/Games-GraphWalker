@@ -1,15 +1,10 @@
 package Games::GraphWalker::Role::Event;
 
-# ABSTRACT: Undocumented class
+# ABSTRACT: Event role
 
 use strict;
 use warnings;
 use Mouse::Role;
-
-has type => (
-    is       => 'ro',
-    required => 1,
-);
 
 1;
 
