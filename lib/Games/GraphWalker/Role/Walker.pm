@@ -1,21 +1,59 @@
-package Games::GraphWalker::Walker;
+package Games::GraphWalker::Role::Walker;
+
+# ABSTRACT: Walker role
+
 use strict;
 use warnings;
 use Mouse::Role;
-use namespace::clean -except => 'meta';
+use namespace::clean -expect => 'meta';
+use Games::GraphWalker::Types;
 
-# ABSTRACT: An object that moves around a grid
+# Events:
+# moved
+# changed_direction
+# entering_node
+# entered_node
+# exiting_node
+# exited_node
+# started_moving
+# stopped_moving
 
-has [qw( _x _y _vx _vy )] => (
+has graph => (
+    is       => 'ro',
+    required => 1,
+);
+
+has max_v => (
+    is      => 'rw',
+    isa     => 'NonNegativeNum',
+    default => 0.1,
+);
+
+has direction => (
+    is        => 'rw',
+    clearer   => '_clear_direction',
+    predicate => 'has_direction',
+);
+
+has _next_direction => ( is => 'rw' );
+
+has [qw( _position _distance )] => (
     is      => 'rw',
     isa     => 'Num',
     default => 0,
 );
 
-has [qw( _want_vx _want_vy _next_x _next_y )] => (
+has current_node => (
+    is       => 'rw',
+    isa      => 'Maybe[Games::GraphWalker::Role::Node]',
+    writer   => '_current_node',
+    required => 1,
+);
+
+has [qw( _last_node _next_node )] => (
     is      => 'rw',
-    isa     => 'Num',
-    default => 0,
+    isa     => 'Maybe[Games::GraphWalker::Role::Node]',
+    default => undef,
 );
 
 has moving => (
@@ -24,91 +62,143 @@ has moving => (
     default => 0,
 );
 
-sub x {
-    my $self = shift;
+around direction => sub {
+    my ( $orig, $self, $dir ) = @_;
 
-    if (@_) {
-        $self->_x(@_);
-    }
+    return $self->$orig unless defined $dir;
 
-    return $self->_x;
-}
+    $self->_next_direction($dir);
 
-sub y {
-    my $self = shift;
+    return $self->$orig if $self->moving;
 
-    if (@_) {
-        $self->_y(@_);
-    }
-
-    return $self->_y;
-}
-
-sub vx {
-    my $self = shift;
-
-    if (@_) {
-        $self->_vx(@_);
-    }
-
-    return $self->_vx;
-}
-
-sub vy {
-    my $self = shift;
-
-    if (@_) {
-        $self->_vy(@_);
-    }
-
-    return $self->_vy;
-}
+    return $self->$orig($dir);
+};
 
 sub move {
     my ( $self, $dt ) = @_;
 
-    return unless $self->moving;
+    # Do we have a direction set?
+    return unless $self->has_direction;
 
-    my $new_x = $self->_x + $self->_vx * $dt;
-    my $new_y = $self->_y + $self->_vy * $dt;
+    # Do we have our next node set?
+    if ( !$self->_next_node ) {
+        return $self->_move_towards( $self->direction, $dt );
+    }
 
-    # did we move too far
+    my $pos = $self->_position + $dt * $self->max_v;
+    warn $self->_distance . " $pos $dt";
 
-    # should we change velocity
+    # Have we reached the next node?
+    if ( $pos >= $self->_distance ) {
+        my $remainder = $pos - $self->_distance;
 
-    $self->_x($new_x);
-    $self->_y($new_y);
+        $self->_current_node( $self->_next_node );
 
-    return;
+        # Events:
+        # entered_node
+
+        if ( $remainder > 0 ) {
+
+            # Do we want to stop moving?
+            if ( !defined $self->_next_direction ) {
+                $self->moving(0);
+                $self->_clear_direction;
+                $self->_next_node(undef);
+
+                # Events:
+                # stopped_moving
+            }
+            else {
+                $self->_move_towards( $self->_next_direction );
+            }
+        }
+    }
+    else {
+        $self->_position($pos);
+    }
+
+    # Events:
+    # moved?
 }
 
-__PACKAGE__->meta->make_immutable;
+sub _move_towards {
+    my ( $self, $dir, $dt ) = @_;
+
+    # Do we have somewhere to move to?
+    #my $nodes = $self->current_node->successors;
+    my $nodes = $self->graph->successors( $self->current_node );
+
+    if ( defined $nodes->{$dir} ) {
+
+        my $node = $nodes->{$dir};
+
+        $self->_last_node( $self->current_node );
+        $self->_next_node($node);
+        $self->_current_node(undef);
+
+        $self->_distance(
+            $self->graph->get_edge_distance(
+                $self->_last_node, $self->_next_node
+            )
+        );
+        $self->_position(0);
+
+        # Events:
+        # exiting_node
+        # entering_node
+
+        if ( !$self->moving ) {
+            $self->moving(1);
+
+            # Events:
+            # started_moving
+        }
+        else {
+
+            # Events:
+            # changed_direction?
+        }
+
+        return $self->move($dt);
+    }
+    elsif ( $self->moving ) {
+        $self->moving(0);
+
+        # Event:
+        # stopped_moving
+        return;
+    }
+
+    # Events:
+    # exiting_node
+    # entering_node
+
+}
+
+sub stop {
+    my $self = shift;
+
+    $self->_next_direction(undef) if $self->moving;
+
+}
 
 1;
+
+__END__
 
 =pod
 
 =head1 SYNOPSIS
 
-    package My::Walker;
-    use Mouse;
-    with 'Games::GraphWalker::Walker';
-
 =head1 DESCRIPTION
-
-What does this module do?
 
 =head1 METHODS
 
-=head2 method
+=head2 move
 
-=head1 CAVEATS
+=head2 set_direction
 
-=head1 BUGS
-
-=head1 RESTRICTIONS
-
-=head1 NOTES
+=head2 stop
 
 =head1 SEE ALSO
 
