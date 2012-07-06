@@ -162,6 +162,8 @@ sub _move_towards {
         return $self->move($dt);
     }
     elsif ( $self->moving ) {
+        $self->_clear_direction();
+        $self->_next_direction(undef);
         $self->moving(0);
 
         # Event:
