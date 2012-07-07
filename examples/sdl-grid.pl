@@ -20,10 +20,7 @@ my $grid = Games::GraphWalker::Grid->new(
     height => $grid_height,
 );
 
-my $node = $grid->get_node(
-    int( $grid_width / 2 ),
-    int( $grid_height / 2 ),
-);
+my $node = $grid->get_node( int( $grid_width / 2 ), int( $grid_height / 2 ) );
 
 my $walker = Games::GraphWalker::Walker->new(
     max_v        => 0.5,
@@ -32,8 +29,12 @@ my $walker = Games::GraphWalker::Walker->new(
 );
 
 my $projection = Games::GraphWalker::GridProjection->new(
-    width  => $width,
-    height => $height,
+    width    => $width,
+    height   => $height,
+    offset_x => $cell_size / 2,
+    offset_y => $cell_size / 2,
+    scale_x  => $cell_size,
+    scale_y  => $cell_size,
 );
 
 my $gw = Games::GraphWalker->new(
@@ -45,7 +46,7 @@ my $gw = Games::GraphWalker->new(
 my $app = SDLx::App->new(
     width  => $grid_width * $cell_size,
     height => $grid_height * $cell_size,
-    #delay  => 20,
+    delay  => 5,
     eoq    => 1,
 );
 
@@ -66,8 +67,8 @@ $app->add_show_handler(
         }
 
         my $pos = $gw->coords_for_walker($walker);
-        my $x = ( $pos->[0] + 0.5 ) * $cell_size - $walker_size / 2;
-        my $y = ( $pos->[1] + 0.5 ) * $cell_size - $walker_size / 2;
+        my $x   = $pos->[0] - $walker_size / 2;
+        my $y   = $pos->[1] - $walker_size / 2;
         $app->draw_rect( [ $x, $y, $walker_size, $walker_size ], 0xFFFF00FF );
 
         $app->update();
@@ -79,10 +80,14 @@ $app->add_event_handler(
         my ($event) = @_;
 
         if ( $event->type == SDL_KEYDOWN ) {
-            $walker->direction(Games::GraphWalker::Grid::WEST)  if $event->key_sym == SDLK_LEFT;
-            $walker->direction(Games::GraphWalker::Grid::EAST)  if $event->key_sym == SDLK_RIGHT;
-            $walker->direction(Games::GraphWalker::Grid::NORTH) if $event->key_sym == SDLK_UP;
-            $walker->direction(Games::GraphWalker::Grid::SOUTH) if $event->key_sym == SDLK_DOWN;
+            $walker->direction(Games::GraphWalker::Grid::WEST)
+                if $event->key_sym == SDLK_LEFT;
+            $walker->direction(Games::GraphWalker::Grid::EAST)
+                if $event->key_sym == SDLK_RIGHT;
+            $walker->direction(Games::GraphWalker::Grid::NORTH)
+                if $event->key_sym == SDLK_UP;
+            $walker->direction(Games::GraphWalker::Grid::SOUTH)
+                if $event->key_sym == SDLK_DOWN;
         }
         elsif ( $event->type == SDL_KEYUP ) {
             $walker->stop() if $event->key_sym == SDLK_LEFT;
