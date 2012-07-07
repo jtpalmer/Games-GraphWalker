@@ -4,7 +4,7 @@ package Games::GraphWalker::Role::Event;
 
 use strict;
 use warnings;
-use Mouse::Role;
+use Any::Moose qw(Role);
 
 1;
 

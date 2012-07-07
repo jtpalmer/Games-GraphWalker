@@ -4,7 +4,7 @@ package Games::GraphWalker::Walker;
 
 use strict;
 use warnings;
-use Mouse;
+use Any::Moose;
 use namespace::clean -except => 'meta';
 use Games::GraphWalker::Types;
 

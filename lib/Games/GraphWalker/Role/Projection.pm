@@ -4,7 +4,7 @@ package Games::GraphWalker::Role::Projection;
 
 use strict;
 use warnings;
-use Moose::Role;
+use Any::Moose qw(Role);
 
 requires qw( coords_for_node coords_for_walker );
 

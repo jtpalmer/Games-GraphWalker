@@ -4,7 +4,7 @@ package Games::GraphWalker::GridProjection;
 
 use strict;
 use warnings;
-use Moose;
+use Any::Moose;
 use namespace::clean -except => 'meta';
 
 # TODO:

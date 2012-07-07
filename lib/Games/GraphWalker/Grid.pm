@@ -4,7 +4,7 @@ package Games::GraphWalker::Grid;
 
 use strict;
 use warnings;
-use Mouse;
+use Any::Moose;
 use namespace::clean -except => 'meta';
 use Carp qw(croak);
 use Games::GraphWalker::GridNode;

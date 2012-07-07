@@ -4,7 +4,7 @@ package Games::GraphWalker::Role::Graph;
 
 use strict;
 use warnings;
-use Mouse::Role;
+use Any::Moose qw(Role);
 use Carp qw(croak);
 use Graph;
 

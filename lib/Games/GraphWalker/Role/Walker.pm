@@ -4,7 +4,7 @@ package Games::GraphWalker::Role::Walker;
 
 use strict;
 use warnings;
-use Mouse::Role;
+use Any::Moose qw(Role);
 use namespace::clean -expect => 'meta';
 use Games::GraphWalker::Types;
 

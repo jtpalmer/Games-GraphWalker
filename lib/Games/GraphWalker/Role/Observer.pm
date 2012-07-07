@@ -4,7 +4,7 @@ package Games::GraphWalker::Role::Observer;
 
 use strict;
 use warnings;
-use Moose::Role;
+use Any::Moose qw(Role);
 
 requires qw(notify);
 

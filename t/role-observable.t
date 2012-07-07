@@ -4,7 +4,7 @@ use Test::More;
 
 {
     package My::Observable;
-    use Mouse;
+    use Any::Moose;
 
     with qw(Games::GraphWalker::Role::Observable);
 

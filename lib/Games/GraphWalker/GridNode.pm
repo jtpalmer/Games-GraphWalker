@@ -4,7 +4,7 @@ package Games::GraphWalker::GridNode;
 
 use strict;
 use warnings;
-use Mouse;
+use Any::Moose;
 use namespace::clean -except => 'meta';
 
 with qw(Games::GraphWalker::Role::Node);

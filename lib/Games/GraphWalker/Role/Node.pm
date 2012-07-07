@@ -4,7 +4,7 @@ package Games::GraphWalker::Role::Node;
 
 use strict;
 use warnings;
-use Mouse::Role;
+use Any::Moose qw(Role);
 use namespace::clean -except => 'meta';
 
 # Events:

@@ -4,7 +4,7 @@ package Games::GraphWalker::Types;
 
 use strict;
 use warnings;
-use Mouse::Util::TypeConstraints;
+use Any::Moose qw(::Util::TypeConstraints);
 
 subtype 'NonNegativeNum' => (
     as 'Num',
@@ -27,7 +27,7 @@ __END__
 =head1 SYNOPSIS
 
     package My::Example;
-    use Mouse;
+    use Any::Moose;
     use Games::GraphWalker::Types;
 
     has number => (
