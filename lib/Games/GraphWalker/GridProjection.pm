@@ -13,6 +13,10 @@ use namespace::clean -except => 'meta';
 # add rotation
 # update node accordingly
 
+# Events:
+# scale_changed
+# offset_changed
+
 with qw(Games::GraphWalker::Role::Projection);
 
 has [qw( offset_x offset_y )] => (
