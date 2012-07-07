@@ -1,38 +1,39 @@
 package Games::GraphWalker::Role::Observable;
 
-# ABSTRACT: Undocumented role
+# ABSTRACT: Observable role
 
 use strict;
 use warnings;
-use Moose::Role;
+use Mouse::Role;
 use Carp qw(croak);
 
 has _observers => (
     is      => 'ro',
-    isa     => 'ArrayRef[CodeRef]',
-    default => sub { [] },
+    isa     => 'HashRef[ArrayRef[CodeRef]]',
+    default => sub { {} },
 );
 
 sub register_observer {
-    my ( $self, $sub ) = @_;
+    my ( $self, $event, $sub ) = @_;
 
     croak "Not a CodeRef: '$sub'" unless ref $sub eq 'CODE';
 
-    push @{ $self->_observers }, $sub;
+    push @{ $self->_observers->{$event} }, $sub;
 }
 
 sub unregister_observer {
-    my ( $self, $sub ) = @_;
+    my ( $self, $event, $sub ) = @_;
 
     croak "Not a CodeRef: '$sub'" unless ref $sub eq 'CODE';
 
-    @{ $self->_observers } = grep { $_ != $sub } @{ $self->_observers };
+    @{ $self->_observers->{event} } = grep { $_ != $sub } @{ $self->_observers->{event} };
 }
 
 sub notify_observers {
-    my ( $self, $event ) = @_;
+    my $self = shift;
+    my $event = shift;
 
-    $_->notify($event) for @{ $self->_observers };
+    $_->(@_) for @{ $self->_observers->{$event} };
 }
 
 1;
