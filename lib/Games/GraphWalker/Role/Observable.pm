@@ -19,6 +19,8 @@ sub register_observer {
     croak "Not a CodeRef: '$sub'" unless ref $sub eq 'CODE';
 
     push @{ $self->_observers->{$event} }, $sub;
+
+    return $sub;
 }
 
 sub unregister_observer {
@@ -26,11 +28,14 @@ sub unregister_observer {
 
     croak "Not a CodeRef: '$sub'" unless ref $sub eq 'CODE';
 
-    @{ $self->_observers->{event} } = grep { $_ != $sub } @{ $self->_observers->{event} };
+    @{ $self->_observers->{$event} }
+        = grep { $_ != $sub } @{ $self->_observers->{$event} };
+
+    return $sub;
 }
 
 sub notify_observers {
-    my $self = shift;
+    my $self  = shift;
     my $event = shift;
 
     $_->(@_) for @{ $self->_observers->{$event} };

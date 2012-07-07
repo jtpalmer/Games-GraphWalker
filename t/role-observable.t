@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 
 {
+
     package My::Observable;
     use Any::Moose;
 
@@ -10,7 +11,7 @@ use Test::More;
 
     sub ping {
         my $self = shift;
-        $self->notify_observers('pinged', @_);
+        $self->notify_observers( 'pinged', @_ );
     }
 }
 
@@ -18,11 +19,15 @@ my $o = My::Observable->new();
 
 my $data;
 
-$o->register_observer('pinged', sub { $data = \@_; });
-
+my $ob = $o->register_observer( 'pinged', sub { $data = \@_; } );
 $o->ping('a');
+is( $data->[0], 'a' );
 
-is($data->[0], 'a');
+$data = undef;
+
+$o->unregister_observer( 'pinged', $ob );
+$o->ping('a');
+is( $data, undef );
 
 done_testing();
 
