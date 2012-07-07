@@ -50,17 +50,21 @@ my $app = SDLx::App->new(
     eoq    => 1,
 );
 
+my $grid_surface = SDLx::Surface->new( width => $width, height => $height );
+
+for my $edge ( $grid->edges ) {
+    my $p0 = $gw->coords_for_node( $edge->[0] );
+    my $p1 = $gw->coords_for_node( $edge->[1] );
+    $grid_surface->draw_line( $p0, $p1, 0x444444ff );
+}
+
 $app->add_move_handler( sub { $gw->move_walkers(@_) } );
 
 $app->add_show_handler(
     sub {
         $app->draw_rect( undef, undef );
 
-        for my $edge ($grid->edges) {
-            my $p0 =  $gw->coords_for_node($edge->[0]);
-            my $p1 =  $gw->coords_for_node($edge->[1]);
-            $app->draw_line( $p0, $p1, 0x444444ff );
-        }
+        $app->blit_by($grid_surface);
 
         my $pos = $gw->coords_for_walker($walker);
         my $x   = $pos->[0] - $walker_size / 2;
