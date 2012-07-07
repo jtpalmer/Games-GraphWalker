@@ -37,8 +37,6 @@ around BUILDARGS => sub {
 
     $nodes = [] unless ref $nodes eq 'ARRAY';
 
-    warn(scalar @$nodes . " nodes");
-
     my $graph = Graph->new(
         directed    => 1,
         refvertexed => 1,

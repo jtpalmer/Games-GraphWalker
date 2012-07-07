@@ -86,7 +86,6 @@ sub move {
     }
 
     my $pos = $self->_position + $dt * $self->max_v;
-    warn $self->_distance . " $pos $dt";
 
     # Have we reached the next node?
     if ( $pos >= $self->_distance ) {

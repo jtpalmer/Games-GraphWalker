@@ -44,8 +44,6 @@ around BUILDARGS => sub {
 
     my ( $width, $height ) = @args{qw( width height )};
 
-    warn "$width, $height";
-
     my ( $x_spacing, $y_spacing ) = @args{qw( x_spacing y_spacing )};
 
     $x_spacing = 1 unless defined $x_spacing;
@@ -110,8 +108,6 @@ around BUILDARGS => sub {
 
 sub get_node {
     my ( $self, $x, $y ) = @_;
-
-    warn "$x, $y";
 
     return $self->_node_at->[$x][$y];
 }
