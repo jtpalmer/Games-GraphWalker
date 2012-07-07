@@ -108,7 +108,7 @@ sub move {
                 # stopped_moving
             }
             else {
-                $self->_move_towards( $self->_next_direction );
+                $self->_move_towards( $self->_next_direction, $remainder );
             }
         }
     }
