@@ -38,7 +38,7 @@ has [qw( _position _distance )] => (
     default => undef,
 );
 
-# Either current_node or both _last_node and _next_node must be defined
+# Either current_node or both _prev_node and _next_node must be defined
 has current_node => (
     is       => 'rw',
     isa      => 'Maybe[Games::GraphWalker::Role::Node]',
@@ -46,7 +46,7 @@ has current_node => (
     required => 1,
 );
 
-has [qw( _last_node _next_node )] => (
+has [qw( _prev_node _next_node )] => (
     is      => 'rw',
     isa     => 'Maybe[Games::GraphWalker::Role::Node]',
     default => undef,
@@ -60,7 +60,7 @@ has moving => (
 
 sub edge {
     my $self = shift;
-    return [ $self->_last_node, $self->_next_node ];
+    return [ $self->_prev_node, $self->_next_node ];
 }
 
 sub move {
@@ -78,15 +78,15 @@ sub move {
         $self->_position($pos);
     }
     else {
-        my $last_node = $self->_last_node;
+        my $prev_node = $self->_prev_node;
         my $next_node = $self->_next_node;
 
         $self->_distance(undef);
         $self->_position(undef);
 
-        $self->notify_observers( 'exited_node',  $self, $last_node );
+        $self->notify_observers( 'exited_node',  $self, $prev_node );
 
-        $self->_last_node(undef);
+        $self->_prev_node(undef);
         $self->_next_node(undef);
         $self->_current_node($next_node);
 
@@ -126,9 +126,9 @@ sub walk_to_node {
 
     croak 'not on a node' unless defined $self->current_node;
 
-    my $last_node = $self->current_node;
+    my $prev_node = $self->current_node;
     my $next_node = $node;
-    my $distance  = $self->graph->get_edge_distance( $last_node, $next_node );
+    my $distance  = $self->graph->get_edge_distance( $prev_node, $next_node );
 
     $self->_distance($distance);
     $self->_position(0);
@@ -138,9 +138,9 @@ sub walk_to_node {
         $self->notify_observers( 'started_moving', $self );
     }
 
-    $self->notify_observers( 'exiting_node',  $self, $last_node );
+    $self->notify_observers( 'exiting_node',  $self, $prev_node );
 
-    $self->_last_node($last_node);
+    $self->_prev_node($prev_node);
     $self->_next_node($next_node);
     $self->_current_node(undef);
 
