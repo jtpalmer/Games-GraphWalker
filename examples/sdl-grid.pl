@@ -6,7 +6,7 @@ use SDL::Event qw( SDL_KEYDOWN SDL_KEYUP );
 use SDL::Events qw( SDLK_LEFT SDLK_RIGHT SDLK_UP SDLK_DOWN );
 use SDLx::App;
 use Games::GraphWalker;
-use Games::GraphWalker::Grid qw( NORTH SOUTH EAST WEST );
+use Games::GraphWalker::Grid;
 use Games::GraphWalker::GridProjection;
 use Games::GraphWalker::DirectionalWalker;
 use Games::GraphWalker::PathWalker;
