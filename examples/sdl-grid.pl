@@ -8,7 +8,7 @@ use SDLx::App;
 use Games::GraphWalker;
 use Games::GraphWalker::Grid qw( NORTH SOUTH EAST WEST );
 use Games::GraphWalker::GridProjection;
-use Games::GraphWalker::Walker;
+use Games::GraphWalker::DirectionalWalker;
 
 my ( $width, $height ) = ( 640, 480 );
 my $cell_size   = 40;
@@ -30,7 +30,7 @@ my $node = $grid->get_node( int( $grid_width / 2 ), int( $grid_height / 2 ) );
 
 die 'Node not found' unless $node;
 
-my $walker = Games::GraphWalker::Walker->new(
+my $walker = Games::GraphWalker::DirectionalWalker->new(
     max_v        => 0.5,
     graph        => $grid,
     current_node => $node,

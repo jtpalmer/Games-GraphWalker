@@ -6,11 +6,14 @@ use strict;
 use warnings;
 use Any::Moose qw(Role);
 use namespace::clean -expect => 'meta';
+use Carp qw(croak);
 use Games::GraphWalker::Types;
 
+with qw(Games::GraphWalker::Role::Observable);
+
 # Events:
-# moved
-# changed_direction
+# moved?
+# changed_direction?
 # entering_node
 # entered_node
 # exiting_node
@@ -29,20 +32,13 @@ has max_v => (
     default => 0.1,
 );
 
-has direction => (
-    is        => 'rw',
-    clearer   => '_clear_direction',
-    predicate => 'has_direction',
-);
-
-has _next_direction => ( is => 'rw' );
-
 has [qw( _position _distance )] => (
     is      => 'rw',
-    isa     => 'Num',
-    default => 0,
+    isa     => 'Maybe[Num]',
+    default => undef,
 );
 
+# Either current_node or both _last_node and _next_node must be defined
 has current_node => (
     is       => 'rw',
     isa      => 'Maybe[Games::GraphWalker::Role::Node]',
@@ -62,125 +58,90 @@ has moving => (
     default => 0,
 );
 
-around direction => sub {
-    my ( $orig, $self, $dir ) = @_;
-
-    return $self->$orig unless defined $dir;
-
-    $self->_next_direction($dir);
-
-    return $self->$orig if $self->moving;
-
-    return $self->$orig($dir);
-};
+sub edge {
+    my $self = shift;
+    return [ $self->_last_node, $self->_next_node ];
+}
 
 sub move {
     my ( $self, $dt ) = @_;
 
-    # Do we have a direction set?
-    return unless $self->has_direction;
+    return if defined $self->current_node;
 
-    # Do we have our next node set?
-    if ( !$self->_next_node ) {
-        return $self->_move_towards( $self->direction, $dt );
-    }
+    return unless defined $dt;
 
     my $pos = $self->_position + $dt * $self->max_v;
 
-    # Have we reached the next node?
-    if ( $pos >= $self->_distance ) {
-        my $remainder = $pos - $self->_distance;
+    my $remainder = $pos - $self->_distance;
 
-        $self->_current_node( $self->_next_node );
-
-        # Events:
-        # entered_node
-
-        if ( $remainder > 0 ) {
-
-            # Do we want to stop moving?
-            if ( !defined $self->_next_direction ) {
-                $self->moving(0);
-                $self->_clear_direction;
-                $self->_next_node(undef);
-
-                # Events:
-                # stopped_moving
-            }
-            else {
-                $self->_move_towards( $self->_next_direction, $remainder );
-            }
-        }
-    }
-    else {
+    if ( $remainder < 0 ) {
         $self->_position($pos);
     }
+    else {
+        my $last_node = $self->_last_node;
+        my $next_node = $self->_next_node;
+        $self->_current_node($next_node);
+        $self->_last_node(undef);
+        $self->_next_node(undef);
+        $self->_distance(undef);
+        $self->_position(undef);
 
-    # Events:
-    # moved?
-}
+        $self->notify_observers( 'exited_node',  $self, $last_node );
+        $self->notify_observers( 'entered_node', $self, $next_node );
+    }
 
-sub _move_towards {
-    my ( $self, $dir, $dt ) = @_;
+    $self->notify_observers( 'moved', $self );
 
-    # Do we have somewhere to move to?
-    #my $nodes = $self->current_node->successors;
-    my $nodes = $self->graph->successors( $self->current_node );
-
-    if ( defined $nodes->{$dir} ) {
-
-        my $node = $nodes->{$dir};
-
-        $self->_last_node( $self->current_node );
-        $self->_next_node($node);
-        $self->_current_node(undef);
-
-        $self->_distance(
-            $self->graph->get_edge_distance(
-                $self->_last_node, $self->_next_node
-            )
-        );
-        $self->_position(0);
-
-        # Events:
-        # exiting_node
-        # entering_node
-
-        if ( !$self->moving ) {
-            $self->moving(1);
-
-            # Events:
-            # started_moving
+    if ( $remainder > 0 ) {
+        if ( defined $self->_next_node ) {
+            return $self->move($remainder);
         }
         else {
-
-            # Events:
-            # changed_direction?
+            $self->moving(0);
+            $self->notify_observers( 'stopped_moving', $self );
         }
-
-        return $self->move($dt);
-    }
-    elsif ( $self->moving ) {
-        $self->_clear_direction();
-        $self->_next_direction(undef);
-        $self->moving(0);
-
-        # Event:
-        # stopped_moving
-        return;
     }
 
-    # Events:
-    # exiting_node
-    # entering_node
-
+    return;
 }
 
-sub stop {
+sub walk_to_direction {
     my $self = shift;
+    my $dir  = shift;
 
-    $self->_next_direction(undef) if $self->moving;
+    croak 'not on a node' unless $self->current_node;
 
+    my $nodes = $self->graph->successors( $self->current_node );
+
+    croak 'Edge not found' unless defined $nodes->{$dir};
+
+    return $self->walk_to_node( $nodes->{$dir}, @_ );
+}
+
+sub walk_to_node {
+    my ( $self, $node, $dt ) = @_;
+
+    croak 'not on a node' unless defined $self->current_node;
+
+    my $last_node = $self->current_node;
+    my $next_node = $node;
+    my $distance  = $self->graph->get_edge_distance( $last_node, $next_node );
+
+    $self->_last_node($last_node);
+    $self->_next_node($next_node);
+    $self->_current_node(undef);
+    $self->_distance($distance);
+    $self->_position(0);
+
+    if ( !$self->moving ) {
+        $self->moving(1);
+        $self->notify_observers( 'started_moving', $self );
+    }
+
+    $self->notify_observers( 'exiting_node',  $self, $last_node );
+    $self->notify_observers( 'entering_node', $self, $next_node );
+
+    return $self->move($dt);
 }
 
 1;
