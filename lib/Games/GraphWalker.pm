@@ -49,5 +49,11 @@ __END__
 
 =head1 SEE ALSO
 
+=over 4
+
+=item * L<Graph>
+
+=back
+
 =cut
 
