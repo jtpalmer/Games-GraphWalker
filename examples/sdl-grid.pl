@@ -9,6 +9,7 @@ use Games::GraphWalker;
 use Games::GraphWalker::Grid qw( NORTH SOUTH EAST WEST );
 use Games::GraphWalker::GridProjection;
 use Games::GraphWalker::DirectionalWalker;
+use Games::GraphWalker::PathWalker;
 
 my ( $width, $height ) = ( 640, 480 );
 my $cell_size   = 40;
@@ -36,6 +37,16 @@ my $walker = Games::GraphWalker::DirectionalWalker->new(
     current_node => $node,
 );
 
+my @path = map { $grid->get_node(@$_) }
+    ( [ 8, 8 ], [ 8, 9 ], [ 8, 10 ], [ 9, 10 ], [ 9, 9 ], [ 9, 8 ] );
+
+my $path_walker = Games::GraphWalker::PathWalker->new(
+    max_v    => 0.2,
+    graph    => $grid,
+    path     => \@path,
+    is_cycle => 1,
+);
+
 my $projection = Games::GraphWalker::GridProjection->new(
     width    => $width,
     height   => $height,
@@ -47,7 +58,7 @@ my $projection = Games::GraphWalker::GridProjection->new(
 
 my $gw = Games::GraphWalker->new(
     graph      => $grid,
-    walkers    => [$walker],
+    walkers    => [ $walker, $path_walker ],
     projection => $projection,
 );
 
@@ -74,10 +85,17 @@ $app->add_show_handler(
 
         $app->blit_by($grid_surface);
 
-        my $pos = $gw->coords_for_walker($walker);
-        my $x   = $pos->[0] - $walker_size / 2;
-        my $y   = $pos->[1] - $walker_size / 2;
+        my ( $pos, $x, $y );
+
+        $pos = $gw->coords_for_walker($walker);
+        $x   = $pos->[0] - $walker_size / 2;
+        $y   = $pos->[1] - $walker_size / 2;
         $app->draw_rect( [ $x, $y, $walker_size, $walker_size ], 0xFFFF00FF );
+
+        $pos = $gw->coords_for_walker($path_walker);
+        $x   = $pos->[0] - $walker_size / 2;
+        $y   = $pos->[1] - $walker_size / 2;
+        $app->draw_rect( [ $x, $y, $walker_size, $walker_size ], 0xFF0000FF );
 
         $app->update();
     }
