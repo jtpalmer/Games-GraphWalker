@@ -80,13 +80,16 @@ sub move {
     else {
         my $last_node = $self->_last_node;
         my $next_node = $self->_next_node;
-        $self->_current_node($next_node);
-        $self->_last_node(undef);
-        $self->_next_node(undef);
+
         $self->_distance(undef);
         $self->_position(undef);
 
         $self->notify_observers( 'exited_node',  $self, $last_node );
+
+        $self->_last_node(undef);
+        $self->_next_node(undef);
+        $self->_current_node($next_node);
+
         $self->notify_observers( 'entered_node', $self, $next_node );
     }
 
@@ -127,9 +130,6 @@ sub walk_to_node {
     my $next_node = $node;
     my $distance  = $self->graph->get_edge_distance( $last_node, $next_node );
 
-    $self->_last_node($last_node);
-    $self->_next_node($next_node);
-    $self->_current_node(undef);
     $self->_distance($distance);
     $self->_position(0);
 
@@ -139,6 +139,11 @@ sub walk_to_node {
     }
 
     $self->notify_observers( 'exiting_node',  $self, $last_node );
+
+    $self->_last_node($last_node);
+    $self->_next_node($next_node);
+    $self->_current_node(undef);
+
     $self->notify_observers( 'entering_node', $self, $next_node );
 
     return $self->move($dt);
