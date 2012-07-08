@@ -47,9 +47,11 @@ sub coords_for_walker {
         return $self->coords_for_node( $walker->current_node );
     }
 
+    my $edge = $walker->edge;
+
     return $self->_interpolate(
-        $self->coords_for_node( $walker->_last_node ),
-        $self->coords_for_node( $walker->_next_node ),
+        $self->coords_for_node( $edge->[0] ),
+        $self->coords_for_node( $edge->[1] ),
         $walker->_position / $walker->_distance
     );
 }
