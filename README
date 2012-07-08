@@ -1,0 +1,17 @@
+NAME
+    Games::GraphWalker - Framework for animating objects that move on a
+    graph
+
+VERSION
+    version 0.000001
+
+AUTHOR
+    Jeffrey T. Palmer <jtpalmer@cpan.org>
+
+COPYRIGHT AND LICENSE
+    This software is Copyright (c) 2012 by Jeffrey T. Palmer.
+
+    This is free software, licensed under:
+
+      The MIT (X11) License
+
