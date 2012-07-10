@@ -48,8 +48,6 @@ my $path_walker = Games::GraphWalker::PathWalker->new(
 );
 
 my $projection = Games::GraphWalker::GridProjection->new(
-    width    => $width,
-    height   => $height,
     offset_x => $cell_size / 2,
     offset_y => $cell_size / 2,
     scale_x  => $cell_size,
