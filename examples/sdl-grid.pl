@@ -6,7 +6,7 @@ use SDL::Event qw( SDL_KEYDOWN SDL_KEYUP );
 use SDL::Events qw( SDLK_LEFT SDLK_RIGHT SDLK_UP SDLK_DOWN );
 use SDLx::App;
 use Games::GraphWalker;
-use Games::GraphWalker::Grid;
+use Games::GraphWalker::Grid qw(-directions);
 use Games::GraphWalker::GridProjection;
 use Games::GraphWalker::DirectionalWalker;
 use Games::GraphWalker::PathWalker;
@@ -106,14 +106,10 @@ $app->add_event_handler(
         my ($event) = @_;
 
         if ( $event->type == SDL_KEYDOWN ) {
-            $walker->direction(Games::GraphWalker::Grid::WEST)
-                if $event->key_sym == SDLK_LEFT;
-            $walker->direction(Games::GraphWalker::Grid::EAST)
-                if $event->key_sym == SDLK_RIGHT;
-            $walker->direction(Games::GraphWalker::Grid::NORTH)
-                if $event->key_sym == SDLK_UP;
-            $walker->direction(Games::GraphWalker::Grid::SOUTH)
-                if $event->key_sym == SDLK_DOWN;
+            $walker->direction(WEST)  if $event->key_sym == SDLK_LEFT;
+            $walker->direction(EAST)  if $event->key_sym == SDLK_RIGHT;
+            $walker->direction(NORTH) if $event->key_sym == SDLK_UP;
+            $walker->direction(SOUTH) if $event->key_sym == SDLK_DOWN;
         }
         elsif ( $event->type == SDL_KEYUP ) {
             $walker->stop() if $event->key_sym == SDLK_LEFT;

@@ -18,6 +18,11 @@ use constant {
     EAST  => 8,
 };
 
+use Sub::Exporter -setup => {
+    exports => [qw( NORTH SOUTH WEST EAST )],
+    groups  => { directions => [qw( NORTH SOUTH WEST EAST )], },
+};
+
 has _walkers => (
     is      => 'ro',
     isa     => 'ArrayRef[Games::GraphWalker::Walker]',
