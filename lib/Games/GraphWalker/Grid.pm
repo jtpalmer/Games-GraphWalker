@@ -25,8 +25,8 @@ has _walkers => (
 );
 
 has _node_at => (
-    is      => 'ro',
-    isa     => 'ArrayRef[ArrayRef[Games::GraphWalker::GridNode]]',
+    is       => 'ro',
+    isa      => 'ArrayRef[ArrayRef[Games::GraphWalker::GridNode]]',
     required => 1,
 );
 
