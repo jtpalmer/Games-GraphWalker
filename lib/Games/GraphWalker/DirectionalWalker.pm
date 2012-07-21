@@ -4,9 +4,8 @@ package Games::GraphWalker::DirectionalWalker;
 
 use strict;
 use warnings;
-use Any::Moose;
+use Moo;
 use namespace::clean -except => 'meta';
-use Games::GraphWalker::Types;
 
 with qw(Games::GraphWalker::Role::Walker);
 

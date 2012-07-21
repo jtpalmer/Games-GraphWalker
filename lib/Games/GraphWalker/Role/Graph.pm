@@ -4,7 +4,7 @@ package Games::GraphWalker::Role::Graph;
 
 use strict;
 use warnings;
-use Any::Moose qw(Role);
+use Moo::Role;
 use Carp qw(croak);
 use Graph;
 
@@ -16,7 +16,7 @@ use Graph;
 
 has _graph => (
     is      => 'ro',
-    isa     => 'Graph',
+    #isa     => 'Graph',
     handles => {
         nodes        => 'vertices',
         edges        => 'edges',

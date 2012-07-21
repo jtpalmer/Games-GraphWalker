@@ -4,7 +4,7 @@ package Games::GraphWalker;
 
 use strict;
 use warnings;
-use Any::Moose;
+use Moo;
 use namespace::clean -except => 'meta';
 
 has graph => (

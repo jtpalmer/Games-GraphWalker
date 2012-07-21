@@ -4,14 +4,21 @@ package Games::GraphWalker::GridNode;
 
 use strict;
 use warnings;
-use Any::Moose;
+use Moo;
 use namespace::clean -except => 'meta';
+use MooX::Types::MooseLike::Base qw(Int);
 
 with qw(Games::GraphWalker::Role::Node);
 
-has [qw( x y )] => (
+has x => (
     is       => 'ro',
-    isa      => 'Int',
+    isa      => Int,
+    required => 1,
+);
+
+has y => (
+    is       => 'ro',
+    isa      => Int,
     required => 1,
 );
 

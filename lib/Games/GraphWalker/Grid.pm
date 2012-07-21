@@ -4,8 +4,9 @@ package Games::GraphWalker::Grid;
 
 use strict;
 use warnings;
-use Any::Moose;
+use Moo;
 use namespace::clean -except => 'meta';
+use MooX::Types::MooseLike::Base qw(Num);
 use Carp qw(croak);
 use Games::GraphWalker::GridNode;
 
@@ -25,20 +26,26 @@ use Sub::Exporter -setup => {
 
 has _walkers => (
     is      => 'ro',
-    isa     => 'ArrayRef[Games::GraphWalker::Walker]',
+    #isa     => 'ArrayRef[Games::GraphWalker::Walker]',
     default => sub { [] },
 );
 
 has _node_at => (
     is       => 'ro',
-    isa      => 'ArrayRef[ArrayRef[Games::GraphWalker::GridNode]]',
+    #isa      => 'ArrayRef[ArrayRef[Games::GraphWalker::GridNode]]',
     required => 1,
 );
 
-has [qw( x_spacing y_spacing )] => (
+has x_spacing => (
     is      => 'ro',
-    isa     => 'Num',
-    default => 1,
+    isa     => Num,
+    default => sub { 1 },
+);
+
+has y_spacing => (
+    is      => 'ro',
+    isa     => Num,
+    default => sub { 1 },
 );
 
 around BUILDARGS => sub {

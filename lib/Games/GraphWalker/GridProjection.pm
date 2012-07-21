@@ -4,8 +4,9 @@ package Games::GraphWalker::GridProjection;
 
 use strict;
 use warnings;
-use Any::Moose;
+use Moo;
 use namespace::clean -except => 'meta';
+use MooX::Types::MooseLike::Base qw(Num);
 
 # TODO:
 # make general cartesian projection (affine transformation?)
@@ -19,16 +20,28 @@ use namespace::clean -except => 'meta';
 
 with qw(Games::GraphWalker::Role::Projection);
 
-has [qw( offset_x offset_y )] => (
+has offset_x => (
     is      => 'rw',
-    isa     => 'Num',
-    default => 0,
+    isa     => Num,
+    default => sub { 0 },
 );
 
-has [qw( scale_x scale_y )] => (
+has offset_y => (
     is      => 'rw',
-    isa     => 'Num',
-    default => 1,
+    isa     => Num,
+    default => sub { 0 },
+);
+
+has scale_x => (
+    is      => 'rw',
+    isa     => Num,
+    default => sub { 1 },
+);
+
+has scale_y => (
+    is      => 'rw',
+    isa     => Num,
+    default => sub { 1 },
 );
 
 sub coords_for_node {

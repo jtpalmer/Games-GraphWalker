@@ -4,12 +4,13 @@ package Games::GraphWalker::Role::Observable;
 
 use strict;
 use warnings;
-use Any::Moose qw(Role);
+use Moo::Role;
+use MooX::Types::MooseLike::Base qw( ArrayRef CodeRef HashRef );
 use Carp qw(croak);
 
 has _observers => (
     is      => 'ro',
-    isa     => 'HashRef[ArrayRef[CodeRef]]',
+    #isa     => HashRef[ArrayRef[CodeRef]],
     default => sub { {} },
 );
 

@@ -4,7 +4,7 @@ package Games::GraphWalker::Role::Node;
 
 use strict;
 use warnings;
-use Any::Moose qw(Role);
+use Moo::Role;
 use namespace::clean -except => 'meta';
 
 # Events:
@@ -15,7 +15,7 @@ use namespace::clean -except => 'meta';
 
 has graph => (
     is       => 'ro',
-    isa      => 'Games::GraphWalker::Role::Graph',
+    #isa      => 'Games::GraphWalker::Role::Graph',
     #required => 1,
 );
 

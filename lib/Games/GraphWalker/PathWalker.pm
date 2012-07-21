@@ -4,8 +4,9 @@ package Games::GraphWalker::PathWalker;
 
 use strict;
 use warnings;
-use Any::Moose;
+use Moo;
 use namespace::clean -except => 'meta';
+use MooX::Types::MooseLike::Base qw( Bool Int );
 use Carp qw(croak);
 use Games::GraphWalker::Types;
 
@@ -13,23 +14,24 @@ with qw(Games::GraphWalker::Role::Walker);
 
 has path => (
     is       => 'ro',
-    isa      => 'ArrayRef[Games::GraphWalker::Role::Node]',
+    #isa      => 'ArrayRef[Games::GraphWalker::Role::Node]',
     required => 1,
 );
 
 has _path_index => (
     is      => 'rw',
-    isa     => 'Int',
-    default => 0,
+    isa     => Int,
+    default => sub {0},
 );
 
 has is_cycle => (
     is      => 'ro',
-    isa     => 'Bool',
-    default => 0,
+    isa     => Bool,
+    default => sub {0},
 );
 
 has '+current_node' => (
+    lazy     => 1,
     builder  => '_build_current_node',
     required => 0,
 );

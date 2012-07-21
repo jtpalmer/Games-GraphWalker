@@ -4,10 +4,11 @@ package Games::GraphWalker::Role::Walker;
 
 use strict;
 use warnings;
-use Any::Moose qw(Role);
+use Moo::Role;
 use namespace::clean -expect => 'meta';
+use MooX::Types::MooseLike::Base qw(Bool);
 use Carp qw(croak);
-use Games::GraphWalker::Types;
+#use Games::GraphWalker::Types;
 
 with qw(Games::GraphWalker::Role::Observable);
 
@@ -28,34 +29,46 @@ has graph => (
 
 has max_v => (
     is      => 'rw',
-    isa     => 'NonNegativeNum',
-    default => 0.1,
+    #isa     => 'NonNegativeNum',
+    default => sub { 0.1 },
 );
 
-has [qw( _position _distance )] => (
+has _position => (
     is      => 'rw',
-    isa     => 'Maybe[Num]',
-    default => undef,
+    #isa     => 'Maybe[Num]',
+    default => sub { undef },
+);
+
+has _distance => (
+    is      => 'rw',
+    #isa     => 'Maybe[Num]',
+    default => sub { undef },
 );
 
 # Either current_node or both _prev_node and _next_node must be defined
 has current_node => (
     is       => 'rw',
-    isa      => 'Maybe[Games::GraphWalker::Role::Node]',
+    #isa      => 'Maybe[Games::GraphWalker::Role::Node]',
     writer   => '_current_node',
     required => 1,
 );
 
-has [qw( _prev_node _next_node )] => (
+has _prev_node => (
     is      => 'rw',
-    isa     => 'Maybe[Games::GraphWalker::Role::Node]',
-    default => undef,
+    #isa     => 'Maybe[Games::GraphWalker::Role::Node]',
+    default => sub { undef },
+);
+
+has _next_node => (
+    is      => 'rw',
+    #isa     => 'Maybe[Games::GraphWalker::Role::Node]',
+    default => sub { undef },
 );
 
 has moving => (
     is      => 'rw',
-    isa     => 'Bool',
-    default => 0,
+    isa     => Bool,
+    default => sub { 0 },
 );
 
 sub edge {
