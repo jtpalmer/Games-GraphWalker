@@ -8,7 +8,7 @@ use Moo;
 use namespace::clean -except => 'meta';
 use MooX::Types::MooseLike::Base qw( Bool Int );
 use Carp qw(croak);
-use Games::GraphWalker::Types;
+#use Games::GraphWalker::Types;
 
 with qw(Games::GraphWalker::Role::Walker);
 

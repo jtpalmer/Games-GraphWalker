@@ -7,8 +7,8 @@ use warnings;
 use Moo::Role;
 use namespace::clean -expect => 'meta';
 use MooX::Types::MooseLike::Base qw(Bool);
+use MooX::Types::MooseLike::Numeric qw(PositiveOrZeroNum);
 use Carp qw(croak);
-#use Games::GraphWalker::Types;
 
 with qw(Games::GraphWalker::Role::Observable);
 
@@ -29,7 +29,7 @@ has graph => (
 
 has max_v => (
     is      => 'rw',
-    #isa     => 'NonNegativeNum',
+    isa     => PositiveOrZeroNum,
     default => sub { 0.1 },
 );
 
