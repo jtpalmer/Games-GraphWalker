@@ -5,8 +5,16 @@ use Test::More;
 BEGIN {
     my @modules = qw(
         Games::GraphWalker
+        Games::GraphWalker::DirectionalWalker
         Games::GraphWalker::Grid
-        Games::GraphWalker::Walker
+        Games::GraphWalker::GridNode
+        Games::GraphWalker::GridProjection
+        Games::GraphWalker::PathWalker
+        Games::GraphWalker::Role::Graph
+        Games::GraphWalker::Role::Node
+        Games::GraphWalker::Role::Observable
+        Games::GraphWalker::Role::Projection
+        Games::GraphWalker::Role::Walker
     );
 
     for my $module (@modules) {
