@@ -5,7 +5,7 @@ use Test::More;
 {
 
     package My::Observable;
-    use Any::Moose;
+    use Moo;
 
     with qw(Games::GraphWalker::Role::Observable);
 
