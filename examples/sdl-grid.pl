@@ -110,10 +110,11 @@ $app->add_event_handler(
             $walker->direction(SOUTH) if $event->key_sym == SDLK_DOWN;
         }
         elsif ( $event->type == SDL_KEYUP ) {
-            $walker->stop() if $event->key_sym == SDLK_LEFT;
-            $walker->stop() if $event->key_sym == SDLK_RIGHT;
-            $walker->stop() if $event->key_sym == SDLK_UP;
-            $walker->stop() if $event->key_sym == SDLK_DOWN;
+            $walker->stop()
+                if $event->key_sym == SDLK_LEFT
+                    || $event->key_sym == SDLK_RIGHT
+                    || $event->key_sym == SDLK_UP
+                    || $event->key_sym == SDLK_DOWN;
         }
     }
 );
