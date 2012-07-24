@@ -29,7 +29,7 @@ for my $coord (@remove_nodes) {
 
 my $node = $grid->get_node( int( $grid_width / 2 ), int( $grid_height / 2 ) );
 
-die 'Node not found' unless $node;
+die 'Center node not found' unless $node;
 
 my $walker = Games::GraphWalker::DirectionalWalker->new(
     max_v        => 0.5,
